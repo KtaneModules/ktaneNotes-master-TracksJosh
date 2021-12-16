@@ -16,7 +16,8 @@ MonoBehaviour:
   author: TracksJosh
   description: 'My cousin''s name is Nate.
 
-'
+
+    Manual: ktane.timwi.de/HTML/Notes.html'
   version: 1.0
   outputFolder: build
   previewImage: {fileID: 2800000, guid: 548adbe22d849bb4e8f832dbd85b527e, type: 3}
