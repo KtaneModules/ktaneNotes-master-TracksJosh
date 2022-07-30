@@ -2,6 +2,7 @@
 using KModkit;
 using System.Collections;
 using System.Collections.Generic;
+using System.Text.RegularExpressions;
 using UnityEngine;
 using System;
 using Rnd = UnityEngine.Random;
@@ -107,4 +108,59 @@ public class notesScript : MonoBehaviour {
             MakeMessage();
         }
     }
+	
+	//twitch plays
+    #pragma warning disable 414
+    private readonly string TwitchHelpMessage = @"To press the red/green button on a certain time, use !{0} press red/green on [0-9]";
+    #pragma warning restore 414
+    
+    IEnumerator ProcessTwitchCommand(string command)
+    {
+		string[] parameters = command.Split(' ');
+		
+		if (Regex.IsMatch(parameters[0], @"^\s*press\s*$", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant) && (Regex.IsMatch(parameters[2], @"^\s*on\s*$", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant)))
+        {
+			yield return null;
+			
+			if (parameters.Length != 4)
+			{
+				yield return "sendtochaterror Parameter length invalid. Command ignored.";
+				yield break;
+			}
+			
+			if (!Regex.IsMatch(parameters[1], @"^\s*red\s*$", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant) && (!Regex.IsMatch(parameters[1], @"^\s*green\s*$", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant)))
+			{
+				yield return "sendtochaterror Color given is not valid. Command ignored.";
+				yield break;
+			}
+			
+			int Out;
+			if (!int.TryParse(parameters[3], out Out))
+			{
+				yield return "sendtochaterror The number given is not valid. Command ignored.";
+				yield break;
+			}
+			
+			if (Out < 0 || Out > 9)
+			{
+				yield return "sendtochaterror The number given is not 0-9. Command ignored.";
+				yield break;
+			}
+			
+			while (((int)bomb.GetTime()) % 10 != Out)
+			{
+				 yield return "trycancel The command is cancelled due to a cancel request.";
+			}
+			
+			if (Regex.IsMatch(parameters[1], @"^\s*red\s*$", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant))
+			{
+				No.OnInteract();
+			}
+			
+			if (Regex.IsMatch(parameters[1], @"^\s*green\s*$", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant))
+			{
+				Yes.OnInteract();
+			}
+		}
+	}
 }
